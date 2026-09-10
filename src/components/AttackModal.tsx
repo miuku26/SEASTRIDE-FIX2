@@ -4,6 +4,7 @@ import { Player, BattleResult } from "../types";
 import { ASSETS, getShipImageForLevel } from "../assets";
 import { useCutoutImage } from "../utils/imageUtils";
 import { X, Sparkles } from "lucide-react";
+import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
 
 interface AttackModalProps {
   onClose: () => void;
@@ -14,24 +15,92 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isAttacking, setIsAttacking] = useState<boolean>(false);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
+  
+  const [showCalibration, setShowCalibration] = useState(false);
+  const [raidEffect, setRaidEffect] = useState<{type: 'win' | 'lose', text: string} | null>(null);
 
   const players = currentServer.players;
 
   const handleLaunchAttack = () => {
     if (!selectedPlayer) return;
-    setIsAttacking(true);
+    if (energy < 1) {
+      alert("Not enough Energy! You need 1 Energy to launch a Bomb raid.");
+      return;
+    }
+    setShowCalibration(true);
+  };
 
+  const handleCalibrationComplete = (isWin: boolean) => {
+    setShowCalibration(false);
+    
+    if (!selectedPlayer) return;
+    
+    const multiplier = isWin ? 1.0 : 0.4;
+    setRaidEffect({
+      type: isWin ? 'win' : 'lose',
+      text: isWin ? 'PERFECT CALIBRATION! CRITICAL BLAST!' : 'GLANCED HIT'
+    });
+
+    setTimeout(() => setRaidEffect(null), 3000);
+
+    setIsAttacking(true);
     setTimeout(() => {
-      const result = attackPlayer(selectedPlayer);
+      const result = attackPlayer(selectedPlayer, multiplier);
       setIsAttacking(false);
       if (result) {
         setBattleResult(result);
       }
-    }, 1200);
+    }, 500);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 select-none">
+    <div className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 select-none ${raidEffect?.type === 'win' ? 'animate-[shake_0.6s_ease-in-out_both]' : raidEffect?.type === 'lose' ? 'animate-[minor-shake_0.4s_ease-in-out_both]' : ''}`}>
+      
+      <style>{`
+        @keyframes shake {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          10%, 30%, 50%, 70%, 90% { transform: translate(-10px, 10px) rotate(-2deg); }
+          20%, 40%, 60%, 80% { transform: translate(10px, -10px) rotate(2deg); }
+        }
+        @keyframes minor-shake {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-3px, 3px); }
+          50% { transform: translate(3px, -3px); }
+          75% { transform: translate(-3px, 3px); }
+        }
+        @keyframes flash {
+          0% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes float-up-fade {
+          0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+          20% { opacity: 1; transform: translateY(0px) scale(1.1); }
+          80% { opacity: 1; transform: translateY(-40px) scale(1); }
+          100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+        }
+      `}</style>
+
+      {/* Flash Effect on hit */}
+      {raidEffect?.type === 'win' && (
+        <div className="absolute inset-0 bg-white z-[150] pointer-events-none animate-[flash_0.8s_ease-out_forwards]" style={{ animation: "flash 0.8s ease-out forwards" }} />
+      )}
+      {raidEffect?.type === 'lose' && (
+        <div className="absolute inset-0 bg-black/40 z-[150] pointer-events-none animate-[flash_0.4s_ease-out_forwards]" style={{ animation: "flash 0.4s ease-out forwards" }} />
+      )}
+
+      {/* Floating text on hit */}
+      {raidEffect && (
+        <div className="absolute inset-0 flex items-center justify-center z-[160] pointer-events-none">
+          <div className={`text-3xl sm:text-5xl font-black font-serif uppercase tracking-widest text-center animate-[float-up-fade_2s_ease-out_forwards] ${raidEffect.type === 'win' ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,1)]' : 'text-gray-400 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]'}`} style={{ animation: "float-up-fade 2s ease-out forwards" }}>
+            {raidEffect.text}
+          </div>
+        </div>
+      )}
+
+      {showCalibration && (
+        <CalibrationMinigameModal onComplete={handleCalibrationComplete} />
+      )}
+
       <div className="bg-[#4a2c17] border-8 border-[#2b1d19] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative text-amber-100 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="bg-[#2b1d19] border-b-4 border-[#4a2c17] p-3.5 flex items-center justify-between">
