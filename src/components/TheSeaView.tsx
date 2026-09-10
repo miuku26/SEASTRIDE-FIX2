@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { RaidBossScreen } from "./RaidBossScreen";
 import { TreasureHuntScreen } from "./TreasureHuntScreen";
+import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
 
 interface SailingShip {
   id: string;
@@ -73,6 +74,7 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
   } = useGame();
 
   const [selectedShip, setSelectedShip] = useState<SailingShip | null>(null);
+  const [minigameTarget, setMinigameTarget] = useState<SailingShip | null>(null);
 
   // Direct battle state inside Sea view for immediate action feedback
   const [isFiringSalvo, setIsFiringSalvo] = useState<boolean>(false);
@@ -248,10 +250,18 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
       return;
     }
 
+    setMinigameTarget(targetShip);
+  };
+
+  const executeBombing = (isWin: boolean) => {
+    if (!minigameTarget || !minigameTarget.playerData) return;
+    
+    const target = minigameTarget.playerData;
+    setMinigameTarget(null);
     setIsFiringSalvo(true);
 
     setTimeout(() => {
-      const res = attackPlayer(targetShip.playerData!);
+      const res = attackPlayer(target, isWin ? 'win' : 'lose');
       setIsFiringSalvo(false);
       if (res) {
         setBattleResult(res);
@@ -339,13 +349,46 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
         </div>
       )}
 
-      {/* Battle Result Victory Card Popup */}
+      {/* Minigame Modal */}
+      {minigameTarget && (
+        <CalibrationMinigameModal onComplete={executeBombing} />
+      )}
+
+      {/* Battle Result Card Popup */}
       {battleResult && (
-        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#2b1d19] border-4 border-[#b45309] rounded-2xl p-5 text-center space-y-4 animate-fade-in shadow-2xl max-w-sm w-full text-amber-100">
-            <div className="text-2xl font-black text-[#fbbf24] font-serif tracking-wide uppercase drop-shadow">
-              ⚔️ RAID VICTORY! ⚔️
+        <div className={`absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all ${battleResult.minigameResult === 'win' ? 'animate-[shake_0.5s_ease-in-out]' : 'animate-[shudder_0.4s_ease-in-out]'}`}>
+          
+          {/* Background FX layer */}
+          {battleResult.minigameResult === 'win' && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+              <div className="absolute w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(251,191,36,0.3)_0%,transparent_50%)] animate-pulse" />
+              {/* Fake embers */}
+              <div className="absolute inset-0 flex flex-wrap justify-center items-center gap-10 opacity-60 mix-blend-screen animate-[spin_10s_linear_infinite]">
+                 <div className="w-4 h-4 bg-orange-500 rounded-full blur-sm" />
+                 <div className="w-6 h-6 bg-red-500 rounded-full blur-md" />
+                 <div className="w-3 h-3 bg-yellow-400 rounded-full blur-sm" />
+              </div>
             </div>
+          )}
+
+          {battleResult.minigameResult === 'lose' && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+              <div className="w-64 h-64 bg-gray-600/40 blur-3xl rounded-full animate-pulse" />
+            </div>
+          )}
+
+          <div className={`relative z-10 border-4 rounded-2xl p-5 text-center space-y-4 shadow-2xl max-w-sm w-full transition-all ${battleResult.minigameResult === 'win' ? 'bg-[#2b1d19] border-[#fbbf24] shadow-[0_0_40px_rgba(251,191,36,0.4)]' : 'bg-[#1a1a1a] border-gray-700'}`}>
+            
+            {/* Animated Title Text */}
+            {battleResult.minigameResult === 'win' ? (
+              <div className="text-3xl font-black text-[#fbbf24] font-serif tracking-wide uppercase drop-shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-[scale-pop_0.5s_ease-out]">
+                PERFECT CALIBRATION!<br/>CRITICAL BLAST!
+              </div>
+            ) : (
+              <div className="text-xl font-black text-gray-400 font-serif tracking-wide uppercase drop-shadow animate-[drop-fade_0.6s_ease-out]">
+                GLANCED HIT
+              </div>
+            )}
 
             <div className="text-xs text-[#fde68a] font-serif">
               You attacked{" "}

@@ -10,3 +10,34 @@ body,
   overflow: hidden;
   position: fixed;
 }
+
+@theme {
+  --animate-shake: shake 0.5s ease-in-out;
+  --animate-shudder: shudder 0.4s ease-in-out;
+  --animate-scale-pop: scale-pop 0.5s ease-out;
+  --animate-drop-fade: drop-fade 0.6s ease-out;
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) translateY(-5px) rotate(-2deg); }
+    20%, 40%, 60%, 80% { transform: translateX(10px) translateY(5px) rotate(2deg); }
+  }
+
+  @keyframes shudder {
+    0%, 100% { transform: translateY(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateY(-5px); }
+    20%, 40%, 60%, 80% { transform: translateY(5px); }
+  }
+
+  @keyframes scale-pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes drop-fade {
+    0% { transform: translateY(-20px); opacity: 0; }
+    50% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0.6; }
+  }
+}

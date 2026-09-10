@@ -4,6 +4,7 @@ import { Player, BattleResult } from "../types";
 import { ASSETS, getShipImageForLevel } from "../assets";
 import { useCutoutImage } from "../utils/imageUtils";
 import { X, Sparkles } from "lucide-react";
+import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
 
 interface AttackModalProps {
   onClose: () => void;
@@ -14,15 +15,27 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isAttacking, setIsAttacking] = useState<boolean>(false);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
+  const [minigameTarget, setMinigameTarget] = useState<Player | null>(null);
 
   const players = currentServer.players;
 
   const handleLaunchAttack = () => {
     if (!selectedPlayer) return;
+    if (energy < 1) {
+      alert("Not enough Energy! You need 1 Energy to launch a Bomb raid.");
+      return;
+    }
+    setMinigameTarget(selectedPlayer);
+  };
+
+  const executeAttack = (isWin: boolean) => {
+    if (!minigameTarget) return;
+    const target = minigameTarget;
+    setMinigameTarget(null);
     setIsAttacking(true);
 
     setTimeout(() => {
-      const result = attackPlayer(selectedPlayer);
+      const result = attackPlayer(target, isWin ? 'win' : 'lose');
       setIsAttacking(false);
       if (result) {
         setBattleResult(result);
@@ -31,8 +44,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 select-none">
-      <div className="bg-[#4a2c17] border-8 border-[#2b1d19] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative text-amber-100 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md select-none">
+      {minigameTarget && (
+        <CalibrationMinigameModal onComplete={executeAttack} />
+      )}
+      <div className="bg-[#4a2c17] border-8 border-[#2b1d19] rounded-3xl w-11/12 max-w-md shadow-2xl flex flex-col relative text-amber-100 max-h-[85dvh] overflow-hidden">
         {/* Header */}
         <div className="bg-[#2b1d19] border-b-4 border-[#4a2c17] p-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -59,76 +75,105 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
         <div className="p-4 overflow-y-auto space-y-4 flex-1">
           {/* If battle result is ready */}
           {battleResult ? (
-            <div className="bg-[#2b1d19] border-4 border-[#b45309] rounded-2xl p-5 text-center space-y-4 animate-fade-in shadow-2xl">
-              <div className="text-3xl font-black text-[#fbbf24] font-serif tracking-wide uppercase drop-shadow">
-                ⚔️ RAID VICTORY! ⚔️
-              </div>
-
-              <div className="text-xs text-[#fde68a] font-serif">
-                You attacked{" "}
-                <span className="font-extrabold text-[#fbbf24]">
-                  {battleResult.targetPlayer.name}
-                </span>
-                !
-              </div>
-
-              {/* Damage & HP Result */}
-              <div className="bg-[#1a0f0d] border-2 border-[#4a2c17] rounded-xl p-3 grid grid-cols-2 gap-2 text-center">
-                <div>
-                  <div className="text-[10px] text-[#fde68a]/80 font-bold uppercase">
-                    Damage Dealt
-                  </div>
-                  <div className="text-xl font-mono font-black text-red-400">
-                    -{battleResult.damageDealt.toLocaleString()} HP
+            <div className={`relative border-4 rounded-2xl p-5 text-center space-y-4 shadow-2xl transition-all ${battleResult.minigameResult === 'win' ? 'bg-[#2b1d19] border-[#fbbf24] shadow-[0_0_40px_rgba(251,191,36,0.4)] animate-shake' : 'bg-[#1a1a1a] border-gray-700 animate-shudder'}`}>
+              
+              {/* Background FX layer */}
+              {battleResult.minigameResult === 'win' && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+                  <div className="absolute w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(251,191,36,0.3)_0%,transparent_50%)] animate-pulse" />
+                  {/* Fake embers */}
+                  <div className="absolute inset-0 flex flex-wrap justify-center items-center gap-10 opacity-60 mix-blend-screen animate-[spin_10s_linear_infinite]">
+                     <div className="w-4 h-4 bg-orange-500 rounded-full blur-sm" />
+                     <div className="w-6 h-6 bg-red-500 rounded-full blur-md" />
+                     <div className="w-3 h-3 bg-yellow-400 rounded-full blur-sm" />
                   </div>
                 </div>
-                <div>
-                  <div className="text-[10px] text-[#fde68a]/80 font-bold uppercase">
-                    Enemy Remaining HP
+              )}
+
+              {battleResult.minigameResult === 'lose' && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+                  <div className="w-64 h-64 bg-gray-600/40 blur-3xl rounded-full animate-pulse" />
+                </div>
+              )}
+
+              <div className="relative z-10">
+                {/* Animated Title Text */}
+                {battleResult.minigameResult === 'win' ? (
+                  <div className="text-3xl font-black text-[#fbbf24] font-serif tracking-wide uppercase drop-shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-scale-pop mb-4">
+                    PERFECT CALIBRATION!<br/>CRITICAL BLAST!
                   </div>
-                  <div className="text-xl font-mono font-black text-[#fbbf24]">
-                    {battleResult.enemyRemainingHpPercent}%
+                ) : (
+                  <div className="text-xl font-black text-gray-400 font-serif tracking-wide uppercase drop-shadow animate-drop-fade mb-4">
+                    GLANCED HIT
+                  </div>
+                )}
+
+                <div className="text-xs text-[#fde68a] font-serif mb-4">
+                  You attacked{" "}
+                  <span className="font-extrabold text-[#fbbf24]">
+                    {battleResult.targetPlayer.name}
+                  </span>
+                  !
+                </div>
+
+                {/* Damage & HP Result */}
+                <div className="bg-[#1a0f0d] border-2 border-[#4a2c17] rounded-xl p-3 grid grid-cols-2 gap-2 text-center mb-4">
+                  <div>
+                    <div className="text-[10px] text-[#fde68a]/80 font-bold uppercase">
+                      Damage Dealt
+                    </div>
+                    <div className="text-xl font-mono font-black text-red-400">
+                      -{battleResult.damageDealt.toLocaleString()} HP
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-[#fde68a]/80 font-bold uppercase">
+                      Enemy Remaining HP
+                    </div>
+                    <div className="text-xl font-mono font-black text-[#fbbf24]">
+                      {battleResult.enemyRemainingHpPercent}%
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Loot Rewards */}
-              <div className="bg-[#1a0f0d] border-2 border-[#b45309] rounded-xl p-3 space-y-2">
-                <div className="text-xs font-black uppercase text-[#fde68a] font-serif">
-                  Plundered Loot:
-                </div>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="flex items-center gap-1.5 bg-[#4a2c17] border-2 border-[#b45309] px-3.5 py-1.5 rounded-xl text-[#fbbf24] font-extrabold">
-                    <span className="text-lg">🪙</span>
-                    <span>+{battleResult.coinsEarned} Gold</span>
+                {/* Loot Rewards */}
+                <div className="bg-[#1a0f0d] border-2 border-[#b45309] rounded-xl p-3 space-y-2 mb-4">
+                  <div className="text-xs font-black uppercase text-[#fde68a] font-serif">
+                    Plundered Loot:
+                  </div>
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center gap-1.5 bg-[#4a2c17] border-2 border-[#b45309] px-3.5 py-1.5 rounded-xl text-[#fbbf24] font-extrabold">
+                      <span className="text-lg">🪙</span>
+                      <span>+{battleResult.coinsEarned} Gold</span>
+                    </div>
+
+                    {battleResult.gemsEarned > 0 && (
+                      <div className="flex items-center gap-1.5 bg-[#1e1b4b] border-2 border-[#4338ca] px-3.5 py-1.5 rounded-xl text-sky-200 font-extrabold">
+                        <span className="text-lg">💎</span>
+                        <span>+{battleResult.gemsEarned} Gem!</span>
+                      </div>
+                    )}
                   </div>
 
-                  {battleResult.gemsEarned > 0 && (
-                    <div className="flex items-center gap-1.5 bg-[#1e1b4b] border-2 border-[#4338ca] px-3.5 py-1.5 rounded-xl text-sky-200 font-extrabold">
-                      <span className="text-lg">💎</span>
-                      <span>+{battleResult.gemsEarned} Gem!</span>
+                  {/* Cannon Loot Drop Alert */}
+                  {battleResult.cannonLooted && (
+                    <div className="bg-[#93bb44] border-b-4 border-[#658627] text-white shadow-sm border-2 border-[#064e3b] p-2.5 rounded-xl flex items-center justify-center gap-2 animate-bounce text-white">
+                      <Sparkles className="w-5 h-5 text-[#facc15]" />
+                      <span className="text-xs font-black uppercase tracking-wide">
+                        LOOTED CANNON! You stole an enemy Lv
+                        {battleResult.lootedCannonLevel} Cannon!
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* Cannon Loot Drop Alert */}
-                {battleResult.cannonLooted && (
-                  <div className="bg-[#93bb44] border-b-4 border-[#658627] text-white shadow-sm border-2 border-[#064e3b] p-2.5 rounded-xl flex items-center justify-center gap-2 animate-bounce text-white">
-                    <Sparkles className="w-5 h-5 text-[#facc15]" />
-                    <span className="text-xs font-black uppercase tracking-wide">
-                      LOOTED CANNON! You stole an enemy Lv
-                      {battleResult.lootedCannonLevel} Cannon!
-                    </span>
-                  </div>
-                )}
+                <button
+                  onClick={() => setBattleResult(null)}
+                  className="w-full bg-[#b45309] hover:bg-[#d97706] border-b-4 border-r-2 border-[#2b1d19] text-white font-black py-3 rounded-xl uppercase italic tracking-wider text-sm shadow-xl active:translate-y-1 relative z-10"
+                >
+                  Raid Again
+                </button>
               </div>
-
-              <button
-                onClick={() => setBattleResult(null)}
-                className="w-full bg-[#b45309] hover:bg-[#d97706] border-b-4 border-r-2 border-[#2b1d19] text-white font-black py-3 rounded-xl uppercase italic tracking-wider text-sm shadow-xl active:translate-y-1"
-              >
-                Raid Again
-              </button>
             </div>
           ) : isAttacking ? (
             /* Cannon Firing Animation Screen */

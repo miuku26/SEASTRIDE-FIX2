@@ -62,6 +62,7 @@ export interface BattleResult {
   cannonLooted: boolean;
   lootedCannonLevel?: number;
   shieldBlocked: boolean;
+  minigameResult?: 'win' | 'lose';
 }
 
 export interface RaidLog {

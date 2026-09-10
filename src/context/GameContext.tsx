@@ -103,7 +103,7 @@ interface GameContextType {
   setSeaGameMode: (mode: SeaGameMode) => void;
 
   // Actions
-  attackPlayer: (target: Player) => BattleResult | null;
+  attackPlayer: (target: Player, minigameResult?: 'win' | 'lose') => BattleResult | null;
   repairShip: (percentToRepair: number) => boolean;
   rebuildShip: () => boolean;
   upgradeShip: () => boolean;
@@ -1147,7 +1147,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // BOMB / Attack Player logic
-  const attackPlayer = (target: Player): BattleResult | null => {
+  const attackPlayer = (target: Player, minigameResult?: 'win' | 'lose'): BattleResult | null => {
     if (energy < 1) {
       alert('Not enough Energy! You need 1 Energy to launch a Bomb raid. Energy refills daily!');
       return null;
@@ -1165,7 +1165,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const c = ownedCannons.find(x => x.id === id);
       return sum + (c ? 2500 + (c.level - 1) * 2500 : 0);
     }, 0);
-    const actualDamage = Math.round(baseDamage * (shipCondition / 100));
+    let actualDamage = Math.round(baseDamage * (shipCondition / 100));
+
+    // Apply minigame multipliers
+    if (minigameResult === 'lose') {
+      actualDamage = Math.round(actualDamage * 0.4); // 40% damage
+    } else if (minigameResult === 'win') {
+      actualDamage = Math.round(actualDamage * 1.2); // 120% damage for perfect hit (Critical)
+    }
 
     // Target HP logic
     const enemyRemainingHp = Math.max(0, target.currentHp - actualDamage);
@@ -1185,15 +1192,23 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       coinsEarned = 25;  // minor hit
     }
+    
+    // Apply loot modifier for loss
+    if (minigameResult === 'lose') {
+        coinsEarned = Math.round(coinsEarned * 0.4);
+    }
 
     // 1% chance for gems drop
     const dropGemChance = Math.random();
-    const gemsEarned = dropGemChance <= 0.05 ? 1 : 0; // boosted slightly to 5% for fun demo feel!
+    let gemsEarned = dropGemChance <= 0.05 ? 1 : 0; // boosted slightly to 5% for fun demo feel!
+    if (minigameResult === 'lose') {
+        gemsEarned = 0;
+    }
 
     // Cannon Looting logic: if enemy ship HP drops below 30%, chance to loot their cannon
     let cannonLooted = false;
     let lootedCannonLevel = target.cannonLevel;
-    if (enemyHpPercent < 30 && target.cannonCount > 0) {
+    if (enemyHpPercent < 30 && target.cannonCount > 0 && minigameResult !== 'lose') {
       const lootChance = Math.random();
       if (lootChance <= 0.6) {
         cannonLooted = true;
@@ -1228,6 +1243,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cannonLooted,
       lootedCannonLevel,
       shieldBlocked: false,
+      minigameResult,
     };
   };
 
