@@ -103,7 +103,7 @@ interface GameContextType {
   setSeaGameMode: (mode: SeaGameMode) => void;
 
   // Actions
-  attackPlayer: (target: Player, damageMultiplier?: number) => BattleResult | null;
+  attackPlayer: (target: Player) => BattleResult | null;
   repairShip: (percentToRepair: number) => boolean;
   rebuildShip: () => boolean;
   upgradeShip: () => boolean;
@@ -1147,7 +1147,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // BOMB / Attack Player logic
-  const attackPlayer = (target: Player, damageMultiplier: number = 1.0): BattleResult | null => {
+  const attackPlayer = (target: Player): BattleResult | null => {
     if (energy < 1) {
       alert('Not enough Energy! You need 1 Energy to launch a Bomb raid. Energy refills daily!');
       return null;
@@ -1160,12 +1160,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setEnergy(e => e - 1);
     soundFx.playCannonBomb();
 
-    // Damage calculation: sum of equipped cannons' damage * condition factor * damageMultiplier
+    // Damage calculation: sum of equipped cannons' damage * condition factor
     const baseDamage = equippedCannons.reduce((sum, id) => {
       const c = ownedCannons.find(x => x.id === id);
       return sum + (c ? 2500 + (c.level - 1) * 2500 : 0);
     }, 0);
-    const actualDamage = Math.round(baseDamage * (shipCondition / 100) * damageMultiplier);
+    const actualDamage = Math.round(baseDamage * (shipCondition / 100));
 
     // Target HP logic
     const enemyRemainingHp = Math.max(0, target.currentHp - actualDamage);

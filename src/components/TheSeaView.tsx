@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { RaidBossScreen } from "./RaidBossScreen";
 import { TreasureHuntScreen } from "./TreasureHuntScreen";
-import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
 
 interface SailingShip {
   id: string;
@@ -78,10 +77,6 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
   // Direct battle state inside Sea view for immediate action feedback
   const [isFiringSalvo, setIsFiringSalvo] = useState<boolean>(false);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
-
-  // Calibration Minigame State
-  const [calibrationTarget, setCalibrationTarget] = useState<SailingShip | null>(null);
-  const [raidEffect, setRaidEffect] = useState<{type: 'win' | 'lose', text: string} | null>(null);
 
   // Initialize sailing ships array
   const [ships, setShips] = useState<SailingShip[]>([]);
@@ -253,31 +248,15 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
       return;
     }
 
-    setCalibrationTarget(targetShip);
-  };
-
-  const handleCalibrationComplete = (isWin: boolean) => {
-    const target = calibrationTarget;
-    setCalibrationTarget(null);
-    
-    if (!target?.playerData) return;
-    
-    const multiplier = isWin ? 1.0 : 0.4;
-    setRaidEffect({
-      type: isWin ? 'win' : 'lose',
-      text: isWin ? 'PERFECT CALIBRATION! CRITICAL BLAST!' : 'GLANCED HIT'
-    });
-
-    setTimeout(() => setRaidEffect(null), 3000);
-
     setIsFiringSalvo(true);
+
     setTimeout(() => {
-      const res = attackPlayer(target.playerData!, multiplier);
+      const res = attackPlayer(targetShip.playerData!);
       setIsFiringSalvo(false);
       if (res) {
         setBattleResult(res);
       }
-    }, 500);
+    }, 1200);
   };
 
   if (seaGameMode === "raid") {
@@ -299,51 +278,10 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
   }
 
   return (
-    <div className={`relative w-full h-full overflow-hidden select-none group ${raidEffect?.type === 'win' ? 'animate-[shake_0.6s_ease-in-out_both]' : raidEffect?.type === 'lose' ? 'animate-[minor-shake_0.4s_ease-in-out_both]' : ''}`}>
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          10%, 30%, 50%, 70%, 90% { transform: translate(-10px, 10px) rotate(-2deg); }
-          20%, 40%, 60%, 80% { transform: translate(10px, -10px) rotate(2deg); }
-        }
-        @keyframes minor-shake {
-          0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(-3px, 3px); }
-          50% { transform: translate(3px, -3px); }
-          75% { transform: translate(-3px, 3px); }
-        }
-        @keyframes float-up-fade {
-          0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-          20% { opacity: 1; transform: translateY(0px) scale(1.1); }
-          80% { opacity: 1; transform: translateY(-40px) scale(1); }
-          100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
-        }
-      `}</style>
-
+    <div className="relative w-full h-full overflow-hidden select-none group">
       {/* Cartoon Wave Motion Overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,30,60,0.3)_100%)] pointer-events-none" />
       <div className="absolute inset-0 bg-sky-400/10 mix-blend-overlay animate-pulse pointer-events-none" />
-
-      {/* Flash Effect on hit */}
-      {raidEffect?.type === 'win' && (
-        <div className="absolute inset-0 bg-white z-[150] pointer-events-none animate-[flash_0.8s_ease-out_forwards]" style={{ animation: "flash 0.8s ease-out forwards" }} />
-      )}
-      {raidEffect?.type === 'lose' && (
-        <div className="absolute inset-0 bg-black/40 z-[150] pointer-events-none animate-[flash_0.4s_ease-out_forwards]" style={{ animation: "flash 0.4s ease-out forwards" }} />
-      )}
-
-      {/* Floating text on hit */}
-      {raidEffect && (
-        <div className="absolute inset-0 flex items-center justify-center z-[160] pointer-events-none">
-          <div className={`text-3xl sm:text-5xl font-black font-serif uppercase tracking-widest text-center animate-[float-up-fade_2s_ease-out_forwards] ${raidEffect.type === 'win' ? 'text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,1)]' : 'text-gray-400 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]'}`} style={{ animation: "float-up-fade 2s ease-out forwards" }}>
-            {raidEffect.text}
-          </div>
-        </div>
-      )}
-
-      {calibrationTarget && (
-        <CalibrationMinigameModal onComplete={handleCalibrationComplete} />
-      )}
 
       {/* Action Controls: Random Bomb & Ship List */}
       {!selectedShip && !isFiringSalvo && !battleResult && (
