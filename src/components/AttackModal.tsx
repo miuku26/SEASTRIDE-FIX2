@@ -4,7 +4,7 @@ import { Player, BattleResult } from "../types";
 import { ASSETS, getShipImageForLevel } from "../assets";
 import { useCutoutImage } from "../utils/imageUtils";
 import { X, Sparkles } from "lucide-react";
-import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
+import { MinigameSelector } from "./minigames/MinigameSelector";
 
 interface AttackModalProps {
   onClose: () => void;
@@ -46,7 +46,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md select-none">
       {minigameTarget && (
-        <CalibrationMinigameModal onComplete={executeAttack} />
+        <MinigameSelector onComplete={executeAttack} />
       )}
       <div className="bg-[#4a2c17] border-8 border-[#2b1d19] rounded-3xl w-11/12 max-w-md shadow-2xl flex flex-col relative text-amber-100 max-h-[85dvh] overflow-hidden">
         {/* Header */}

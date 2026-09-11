@@ -48,28 +48,6 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
     return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
   }, [isLocked]);
 
-  useEffect(() => {
-    if (isLocked) return;
-    
-    const startTime = Date.now();
-    let timerRef: number;
-    
-    const updateTimer = () => {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 5.0 - (elapsed / 1000));
-      setTimeLeft(remaining);
-      
-      if (remaining <= 0) {
-        handleLock(true); // Auto-fail
-      } else {
-        timerRef = requestAnimationFrame(updateTimer);
-      }
-    };
-    
-    timerRef = requestAnimationFrame(updateTimer);
-    return () => cancelAnimationFrame(timerRef);
-  }, [isLocked]);
-
   const handleLock = (isTimeout: boolean = false) => {
     if (isLocked) return;
     setIsLocked(true);

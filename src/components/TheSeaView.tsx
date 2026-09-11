@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { RaidBossScreen } from "./RaidBossScreen";
 import { TreasureHuntScreen } from "./TreasureHuntScreen";
-import { CalibrationMinigameModal } from "./minigames/CalibrationMinigameModal";
+import { MinigameSelector } from "./minigames/MinigameSelector";
 
 interface SailingShip {
   id: string;
@@ -351,7 +351,7 @@ export const TheSeaView: React.FC<TheSeaViewProps> = ({
 
       {/* Minigame Modal */}
       {minigameTarget && (
-        <CalibrationMinigameModal onComplete={executeBombing} />
+        <MinigameSelector onComplete={executeBombing} />
       )}
 
       {/* Battle Result Card Popup */}

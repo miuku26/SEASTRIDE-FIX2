@@ -166,7 +166,7 @@ function MainAppContent() {
               openModal={openModal}
               onBackToMenu={() => setActiveTab("menu")}
               onHelp={() => {
-                let targetTab = activeModal || activeTab;
+                let targetTab: string = activeModal || activeTab;
                 if (!activeModal && activeTab === "sea" && (seaGameMode === "treasure" || seaGameMode === "raid")) {
                   targetTab = seaGameMode;
                 }
