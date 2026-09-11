@@ -69,7 +69,7 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
     
     enemyReqRef.current = requestAnimationFrame(animateEnemy);
     return () => { if (enemyReqRef.current) cancelAnimationFrame(enemyReqRef.current); };
-  }, []);
+  }, [showTutorial]);
 
   // Handle power charging
   useEffect(() => {
