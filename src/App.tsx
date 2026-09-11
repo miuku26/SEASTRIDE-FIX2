@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GameProvider } from "./context/GameContext";
+import { GameProvider, useGame } from "./context/GameContext";
 import { HeaderHUD } from "./components/HeaderHUD";
 import { HomeScreen } from "./components/HomeScreen";
 import { ShipBuildScreen } from "./components/ShipBuildScreen";
@@ -30,6 +30,7 @@ type ActiveModal =
   | null;
 
 function MainAppContent() {
+  const { seaGameMode } = useGame();
   const [activeTab, setActiveTab] = useState<
     "menu" | "home" | "build" | "sea" | "leaderboard"
   >("menu");
@@ -39,6 +40,44 @@ function MainAppContent() {
     step?: number;
     timestamp: number;
   } | null>(null);
+  
+  // Track modal tutorials in memory for current session
+  const [modalTutorialsSeen, setModalTutorialsSeen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (activeModal && !modalTutorialsSeen[activeModal]) {
+      const hasSteps = activeModal === "upgrades" || activeModal === "repair";
+      if (hasSteps) {
+        const timer = setTimeout(() => {
+          setModalTutorialsSeen(prev => ({ ...prev, [activeModal]: true }));
+          setTutorialTrigger({
+            tab: activeModal,
+            timestamp: Date.now(),
+          });
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [activeModal, modalTutorialsSeen]);
+
+  // Track Game Mode tutorials in localStorage (persist across sessions)
+  useEffect(() => {
+    if (activeTab === "sea" && !activeModal) {
+      if (seaGameMode === "treasure" || seaGameMode === "raid") {
+        const storageKey = `hasSeen${seaGameMode === "treasure" ? "TreasureHunt" : "RaidingBoss"}Tutorial`;
+        if (!localStorage.getItem(storageKey)) {
+          const timer = setTimeout(() => {
+            localStorage.setItem(storageKey, "true");
+            setTutorialTrigger({
+              tab: seaGameMode,
+              timestamp: Date.now(),
+            });
+          }, 800); // Wait for mode interface to fully mount
+          return () => clearTimeout(timer);
+        }
+      }
+    }
+  }, [activeTab, activeModal, seaGameMode]);
 
   // Auto-start pirate BGM on load & play distinct sounds for buttons
   useEffect(() => {
@@ -126,12 +165,16 @@ function MainAppContent() {
               setActiveTab={setActiveTab}
               openModal={openModal}
               onBackToMenu={() => setActiveTab("menu")}
-              onHelp={() =>
+              onHelp={() => {
+                let targetTab = activeModal || activeTab;
+                if (!activeModal && activeTab === "sea" && (seaGameMode === "treasure" || seaGameMode === "raid")) {
+                  targetTab = seaGameMode;
+                }
                 setTutorialTrigger({
-                  tab: activeTab,
+                  tab: targetTab,
                   timestamp: Date.now(),
-                })
-              }
+                });
+              }}
             />
 
             <main className="flex-1 min-h-0 overflow-y-auto relative flex flex-col">
@@ -180,7 +223,12 @@ function MainAppContent() {
 
         {/* Feature Highlight Tutorial */}
         <TutorialOverlay
-          activeTab={activeTab}
+          activeTab={
+            activeModal ||
+            (activeTab === "sea" && (seaGameMode === "treasure" || seaGameMode === "raid")
+              ? seaGameMode
+              : activeTab)
+          }
           setActiveTab={setActiveTab}
           tutorialTrigger={tutorialTrigger}
           onTutorialEnd={() => setTutorialTrigger(null)}

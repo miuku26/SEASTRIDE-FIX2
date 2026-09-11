@@ -225,6 +225,190 @@ const GLOBAL_STEPS: (Step & { _tab: string; [key: string]: any })[] = [
       </div>
     ),
   },
+  // Upgrades Modal
+  {
+    target: ".tutorial-upgrades-stats",
+    placement: "bottom",
+    _tab: "upgrades",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Ship Upgrades
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Enhancing your Hull, Cannon, and Shield boosts your flagship's overall performance in battle.
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-upgrades-action",
+    placement: "top",
+    _tab: "upgrades",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Upgrade Actions
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Spend gold and resources to strengthen your ship. Keep your stats maxed!
+        </p>
+      </div>
+    ),
+  },
+  // Repair Modal
+  {
+    target: ".tutorial-repair-status",
+    placement: "bottom",
+    _tab: "repair",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Ship Condition
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          This bar shows your flagship's current durability. If it drops too low, you'll be vulnerable!
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-repair-action",
+    placement: "top",
+    _tab: "repair",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Repair Ship
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Consume wood and other resources to restore durability and stay battle-ready.
+        </p>
+      </div>
+    ),
+  },
+  // Treasure Hunt
+  {
+    target: ".tutorial-scan-area",
+    placement: "bottom",
+    _tab: "treasure",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Treasure Radar
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          This radar tracks treasures spawned exclusively for this server! Move close (≤45m) to tap and plunder chests before others do.
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-treasure-action",
+    placement: "top",
+    _tab: "treasure",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Action Area
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Focus on a target chest, or tap Plunder when you are close enough!
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-treasure-daily-limit",
+    placement: "bottom",
+    _tab: "treasure",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Daily Stash
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Track how many chests you've successfully plundered today. They reset every 24 hours.
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-treasure-rewards",
+    placement: "top",
+    _tab: "treasure",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Loot Summaries
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          Chests contain Coins, Gems, and rare Secret Items! View your daily hauls here.
+        </p>
+      </div>
+    ),
+  },
+  // Raid Boss
+  {
+    target: ".tutorial-boss-health",
+    placement: "bottom",
+    _tab: "raid",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Boss Health
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          This is the mighty Leviathan's HP. The whole server works together to bring it down!
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-boss-action",
+    placement: "top",
+    _tab: "raid",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Launch Attacks
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          After joining, every physical footstep you take automatically deals 1 HP damage! Keep walking to fight!
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-boss-timer",
+    placement: "top",
+    _tab: "raid",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Battle Timer
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          You must defeat the Boss before the time runs out, or the Raid fails!
+        </p>
+      </div>
+    ),
+  },
+  {
+    target: ".tutorial-boss-rewards",
+    placement: "top",
+    _tab: "raid",
+    content: (
+      <div className="font-serif">
+        <h3 className="text-[clamp(0.95rem,3.2vw,1.15rem)] font-black text-[#4a2c17] mb-1">
+          Boss Rewards
+        </h3>
+        <p className="text-[clamp(0.75rem,2.5vw,0.85rem)] text-[#8b5a33] font-bold leading-relaxed">
+          When the Boss falls, the sealed bounty unlocks! You'll earn a share based on your total damage contributed.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 export const TutorialOverlay: React.FC<TutorialProps> = ({
@@ -269,7 +453,10 @@ export const TutorialOverlay: React.FC<TutorialProps> = ({
     setRun(false);
 
     if (currentTab !== activeTab) {
-      setActiveTab(currentTab as any);
+      const validTabs = ["menu", "home", "build", "sea", "leaderboard"];
+      if (validTabs.includes(currentTab)) {
+        setActiveTab(currentTab as any);
+      }
     }
 
     const timer = setTimeout(() => {

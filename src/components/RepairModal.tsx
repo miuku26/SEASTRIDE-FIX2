@@ -54,7 +54,7 @@ export const RepairModal: React.FC<RepairModalProps> = ({ onClose }) => {
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Status Banner */}
-          <div className="bg-[#2b1d19] border-4 border-[#b45309] rounded-2xl p-4 text-center space-y-2">
+          <div className="tutorial-repair-status bg-[#2b1d19] border-4 border-[#b45309] rounded-2xl p-4 text-center space-y-2">
             <div className="text-xs font-serif font-black uppercase text-[#fde68a]">
               Ship Condition Gauge
             </div>
@@ -97,7 +97,7 @@ export const RepairModal: React.FC<RepairModalProps> = ({ onClose }) => {
 
           {/* Action Area */}
           {shipCondition === 0 ? (
-            <div className="space-y-3 bg-[#2b1d19] p-3.5 rounded-xl border-2 border-[#b45309] text-center">
+            <div className="tutorial-repair-action space-y-3 bg-[#2b1d19] p-3.5 rounded-xl border-2 border-[#b45309] text-center">
               <p className="text-xs text-[#fde68a]">
                 Rebuild increases condition from 0% to 5% so you can perform
                 standard repairs.
@@ -111,7 +111,7 @@ export const RepairModal: React.FC<RepairModalProps> = ({ onClose }) => {
               </button>
             </div>
           ) : (
-            <div className="space-y-3 bg-[#2b1d19] p-3.5 rounded-xl border-2 border-[#b45309]">
+            <div className="tutorial-repair-action space-y-3 bg-[#2b1d19] p-3.5 rounded-xl border-2 border-[#b45309]">
               <div className="flex justify-between items-center text-xs font-serif font-black text-[#fde68a]">
                 <span>Repair Slider (+{repairAmount}%)</span>
                 <span className="text-[#fbbf24]">Cost: {repairCost} Coins</span>

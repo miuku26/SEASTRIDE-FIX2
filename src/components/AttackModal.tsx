@@ -100,7 +100,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({ onClose }) => {
                 {/* Animated Title Text */}
                 {battleResult.minigameResult === 'win' ? (
                   <div className="text-3xl font-black text-[#fbbf24] font-serif tracking-wide uppercase drop-shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-scale-pop mb-4">
-                    PERFECT CALIBRATION!<br/>CRITICAL BLAST!
+                    CRITICAL BLAST!
                   </div>
                 ) : (
                   <div className="text-xl font-black text-gray-400 font-serif tracking-wide uppercase drop-shadow animate-drop-fade mb-4">

@@ -88,12 +88,18 @@ const RewardModal: React.FC<RewardModalProps> = ({
   const meta = getRarityMetadata(rarity);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none">
+    <div 
+      className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 select-none"
+      style={{
+        paddingTop: 'max(1rem, env(safe-area-inset-top))',
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+      }}
+    >
       <motion.div
         initial={{ scale: 0.8, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.8, opacity: 0 }}
-        className="bg-[#3a2012] border-3 sm:border-4 border-amber-500 rounded-3xl w-full max-w-xs sm:max-w-sm max-h-[88vh] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.5)] text-amber-100 flex flex-col relative text-center"
+        className="bg-[#3a2012] border-3 sm:border-4 border-amber-500 rounded-3xl w-[90vw] max-w-sm sm:max-w-md max-h-[85dvh] overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.5)] text-amber-100 flex flex-col relative text-center"
       >
         {/* Top Header */}
         <div className="bg-[#201109] border-b-2 border-amber-500/40 p-2.5 sm:p-3.5 flex items-center justify-between flex-shrink-0">
@@ -104,7 +110,7 @@ const RewardModal: React.FC<RewardModalProps> = ({
         </div>
 
         {/* Chest Content */}
-        <div className="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto flex-1 max-h-[calc(80dvh-120px)]">
           <div className="space-y-1">
             <span
               className={`inline-block px-2.5 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-widest ${meta.borderStyle}`}
@@ -690,7 +696,7 @@ export const TreasureHuntScreen: React.FC = () => {
       </div>
 
       {/* Real-time Radar Screen with Leaflet Map Behind */}
-      <div className="bg-[#24130b] border-4 border-[#5a2e16] rounded-3xl p-4 shadow-2xl relative overflow-hidden space-y-3">
+      <div className="tutorial-scan-area bg-[#24130b] border-4 border-[#5a2e16] rounded-3xl p-4 shadow-2xl relative overflow-hidden space-y-3">
         {/* Header Title with 2km Radar Status */}
         <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5 flex-wrap gap-2">
           <div className="flex items-center gap-2">
@@ -875,7 +881,7 @@ export const TreasureHuntScreen: React.FC = () => {
             </div>
 
             {/* Action / Touch Range Status */}
-            <div className="text-right flex flex-col items-end gap-1">
+            <div className="tutorial-treasure-action text-right flex flex-col items-end gap-1">
               {nearestTreasure.distanceMeters! <= 45 ? (
                 <button
                   onClick={() => {
@@ -932,7 +938,7 @@ export const TreasureHuntScreen: React.FC = () => {
       )}
 
       {/* USER'S TODAY LOOT BOX */}
-      <div className="bg-[#24130b] border-2 border-amber-500/60 rounded-2xl p-4 space-y-3.5 shadow-xl">
+      <div className="tutorial-treasure-daily-limit bg-[#24130b] border-2 border-amber-500/60 rounded-2xl p-4 space-y-3.5 shadow-xl">
         <div className="flex items-center justify-between border-b border-amber-500/25 pb-2.5">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-amber-500/20 border border-amber-500/40 rounded-xl text-amber-400">
@@ -954,7 +960,7 @@ export const TreasureHuntScreen: React.FC = () => {
         </div>
 
         {/* 3-Pillar Loot Summary Counters */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="tutorial-treasure-rewards grid grid-cols-3 gap-2">
           {/* Coins Looted */}
           <div className="p-2.5 rounded-xl bg-[#1a0c06] border border-amber-500/20 flex flex-col items-center justify-center text-center">
             <div className="text-xl mb-0.5">🪙</div>

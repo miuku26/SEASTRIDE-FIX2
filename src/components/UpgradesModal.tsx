@@ -128,7 +128,7 @@ export const UpgradesModal: React.FC<UpgradesModalProps> = ({ onClose }) => {
         </div>
 
         {/* Tab Content */}
-        <div className="p-4 overflow-y-auto space-y-4 flex-1">
+        <div className="tutorial-upgrades-stats p-4 overflow-y-auto space-y-4 flex-1">
           {/* SHIP TAB */}
           {activeTab === "ship" && (
             <div className="space-y-4 text-center">
@@ -173,7 +173,7 @@ export const UpgradesModal: React.FC<UpgradesModalProps> = ({ onClose }) => {
               <button
                 onClick={upgradeShip}
                 disabled={shipLevel >= 10 || coins < shipUpgradeCost}
-                className={`w-full py-3.5 rounded-xl font-black text-sm uppercase italic tracking-wider flex items-center justify-center gap-2 border-b-4 border-r-2 shadow-xl ${
+                className={`tutorial-upgrades-action w-full py-3.5 rounded-xl font-black text-sm uppercase italic tracking-wider flex items-center justify-center gap-2 border-b-4 border-r-2 shadow-xl ${
                   shipLevel >= 10
                     ? "bg-stone-800 border-[#2b1d19] text-stone-500 cursor-not-allowed"
                     : coins < shipUpgradeCost

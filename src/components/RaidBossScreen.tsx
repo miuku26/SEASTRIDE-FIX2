@@ -123,7 +123,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
             </span>
           </div>
 
-          <div className="flex items-center gap-1 px-3 py-1 bg-[#2b1d19]/90 border border-amber-400/50 rounded-full text-[10px] font-bold text-amber-300 flex-shrink-0 shadow">
+          <div className="tutorial-boss-timer flex items-center gap-1 px-3 py-1 bg-[#2b1d19]/90 border border-amber-400/50 rounded-full text-[10px] font-bold text-amber-300 flex-shrink-0 shadow">
             <Clock size={11} className="text-amber-400 flex-shrink-0" />
             <span>{timeRemaining}</span>
           </div>
@@ -133,7 +133,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
         <div className="relative z-10 flex flex-col items-center justify-start py-2 text-center max-w-sm mx-auto w-full gap-3 min-w-0 flex-shrink-0 pb-6">
           
           {/* 1. Question / Joining Rule Contract Box & Action Options */}
-          <div className="w-full bg-gradient-to-b from-[#2b1d19] via-[#211613] to-[#170e0c] border-2 border-[#b45309] rounded-2xl p-3.5 shadow-2xl text-left min-w-0">
+          <div className="tutorial-boss-action w-full bg-gradient-to-b from-[#2b1d19] via-[#211613] to-[#170e0c] border-2 border-[#b45309] rounded-2xl p-3.5 shadow-2xl text-left min-w-0">
             <div className="flex items-center gap-2 font-black text-xs sm:text-sm text-[#facc15] font-serif uppercase tracking-wider mb-1.5">
               <Swords size={16} className="text-[#facc15] flex-shrink-0" /> 
               <span className="truncate">Join Fleet Raid Battle?</span>
@@ -276,7 +276,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
         </div>
 
         <div className="flex items-center gap-1.5">
-          <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#2b1d19]/90 border border-amber-400/50 rounded-full text-[9px] font-bold text-amber-300 shadow">
+          <div className="tutorial-boss-timer flex items-center gap-1 px-2.5 py-0.5 bg-[#2b1d19]/90 border border-amber-400/50 rounded-full text-[9px] font-bold text-amber-300 shadow">
             <Clock size={10} className="text-amber-400" />
             <span>{timeRemaining}</span>
           </div>
@@ -343,7 +343,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
           </div>
 
           {/* Boss HP Gauge */}
-          <div className="mt-1 flex flex-col gap-0.5">
+          <div className="tutorial-boss-health mt-1 flex flex-col gap-0.5">
             <div className="flex justify-between items-center text-[9px] sm:text-[10px] font-black leading-none">
               <span className="text-rose-400 flex items-center gap-0.5">
                 <Flame size={10} className="text-rose-500" /> Boss HP
@@ -469,7 +469,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
           </div>
 
           {/* Step Rule Badge */}
-          <div className="absolute bottom-0 left-1 z-20 px-2.5 py-0.5 bg-[#2b1d19]/90 backdrop-blur-md rounded-lg border border-[#8b5a2b] text-[8px] sm:text-[9px] font-bold text-amber-300 flex items-center gap-1 shadow">
+          <div className="tutorial-boss-action absolute bottom-0 left-1 z-20 px-2.5 py-0.5 bg-[#2b1d19]/90 backdrop-blur-md rounded-lg border border-[#8b5a2b] text-[8px] sm:text-[9px] font-bold text-amber-300 flex items-center gap-1 shadow">
             <Footprints size={10} className="text-emerald-400 animate-bounce" /> 1 Walk Step = 1 HP Damage
           </div>
         </div>
@@ -552,7 +552,7 @@ export function RaidBossScreen({ onBackToMenu, openServerModal, embeddedMode = f
           <div className="flex gap-1.5 items-center w-full min-w-0">
             
             {/* Sealed Mystery Bounty Card */}
-            <div className="flex-1 bg-gradient-to-r from-[#2b1d19] via-[#211613] to-[#170e0c] border border-[#8b5a2b] rounded-xl px-2.5 py-1.5 flex items-center justify-between shadow min-w-0">
+            <div className="tutorial-boss-rewards flex-1 bg-gradient-to-r from-[#2b1d19] via-[#211613] to-[#170e0c] border border-[#8b5a2b] rounded-xl px-2.5 py-1.5 flex items-center justify-between shadow min-w-0">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-5 h-5 rounded-md bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-[10px] flex-shrink-0">
                   🎁

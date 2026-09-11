@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Crosshair } from "lucide-react";
 import { soundFx } from "../../utils/audio";
 
 import gaugeTrackSrc from "../../assets/images/calibration_gauge_track.png";
 import gaugeNeedleSrc from "../../assets/images/calibration_needle_indicator.png";
-import fuseSparkSrc from "../../assets/images/fuse_spark_ember.png";
 import bgImageSrc from "../../assets/images/simple_menu_bg_1786470898720.jpg";
+import miniCannonSrc from "../../assets/images/Mini_Cannon.png";
+import shipSrc from "../../assets/images/ship_v2_lv3_green_1786547883554.png";
 
 interface Props {
   onComplete: (isWin: boolean) => void;
@@ -89,83 +89,75 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
     }, 400); // Shorter delay so feedback feels faster
   };
 
-  const fusePercentage = (timeLeft / 5.0) * 100;
-
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div 
-        className="bg-[#1a0f0d]/90 border border-[#b45309]/50 rounded-[2rem] w-full max-w-sm p-6 shadow-2xl flex flex-col items-center relative overflow-hidden bg-cover bg-center bg-no-repeat"
+        className="relative w-full max-w-sm h-full max-h-[75vh] sm:max-h-[70vh] sm:rounded-3xl flex flex-col items-center justify-between py-6 overflow-hidden bg-contain bg-center bg-no-repeat shadow-2xl"
         style={{ backgroundImage: `url(${bgImageSrc})` }}
       >
-        {/* Light Overlay Layer */}
-        <div className="absolute inset-0 bg-[#0B0F19]/50 backdrop-blur-md z-0" />
         
-        <div className="relative z-10 w-full flex flex-col items-center">
-          {/* Top Fuse Bar (No Numbers) */}
-          <div className="w-full h-3 bg-black/80 rounded-full relative mb-8 border border-[#4a2c17]">
-          <div 
-            className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 rounded-full"
-            style={{ width: `${fusePercentage}%` }}
-          />
+        {/* Ship Decoration - Upper Half */}
+        <div className="w-full flex-1 flex flex-col items-center justify-start pt-8 sm:pt-12 pointer-events-none z-10">
           <img 
-            src={fuseSparkSrc}
-            alt="spark"
-            className="absolute top-1/2 -translate-y-1/2 w-24 h-24 object-contain z-10 brightness-125 drop-shadow-[0_0_12px_rgba(255,165,0,0.9)]"
-            style={{ left: `calc(${fusePercentage}% - 48px)` }}
-            referrerPolicy="no-referrer"
+            src={shipSrc} 
+            alt="Enemy Ship" 
+            className="w-24 sm:w-32 md:w-40 object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] animate-[pulse_4s_ease-in-out_infinite]"
           />
         </div>
 
-        <div className="text-[#fde68a] font-serif font-black uppercase tracking-wider mb-2 text-center text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          Target Lock
-        </div>
-        <p className="text-xs text-amber-200/70 font-bold mb-8 text-center max-w-[200px] uppercase tracking-wide">
-          Fire when aligned!
-        </p>
-
-        {/* Gauge Track & Needle */}
-        <div className="w-full max-w-[260px] relative mb-12 h-16 flex flex-col items-center justify-center">
-          {/* Optimal Zone Highlight (behind track) */}
-          <div className="absolute left-[38%] right-[38%] top-0 bottom-0 bg-green-500/30 blur-sm rounded-full pointer-events-none" />
-          
-          {/* Track Layer */}
-          <img 
-            src={gaugeTrackSrc}
-            alt="Gauge Track"
-            className="w-full h-full z-10 object-contain drop-shadow-2xl relative"
-            referrerPolicy="no-referrer"
-          />
-
-          {/* Needle overlaying the track container in layout (visually above the track) */}
-          <div className="absolute top-0 bottom-0 left-0 right-0 pointer-events-none z-20 flex items-end">
+        {/* Lower Half Content: Gauge and Cannon */}
+        <div className="relative z-10 w-full flex flex-col items-center px-4 mt-auto">
+          {/* Gauge Track & Needle - pushed down */}
+          <div className="w-full max-w-[280px] relative h-14 sm:h-16 flex flex-col items-center justify-center mb-6 mt-8">
+            {/* Optimal Zone Highlight (behind track) */}
+            <div className="absolute left-[38%] right-[38%] top-0 bottom-0 bg-green-500/30 blur-sm rounded-full pointer-events-none" />
+            
+            {/* Track Layer */}
             <img 
-              src={gaugeNeedleSrc}
-              alt="Needle"
-              className="absolute bottom-0 w-8 object-contain origin-bottom"
-              style={{ 
-                left: `${needlePos}%`, 
-                transform: 'translateX(-50%) scale(0.5)',
-                filter: 'drop-shadow(0 -2px 10px rgba(255,0,0,0.8))'
-              }}
+              src={gaugeTrackSrc}
+              alt="Gauge Track"
+              className="w-full h-full z-10 object-contain drop-shadow-2xl relative"
               referrerPolicy="no-referrer"
             />
-          </div>
-        </div>
 
-        {/* Action Button */}
-        <button
-          onClick={() => {
-            soundFx.playClick();
-            handleLock(false);
-          }}
-          disabled={isLocked}
-          className="w-full bg-red-700 hover:bg-red-600 border-b-4 border-r-2 border-red-950 text-white font-black py-3 rounded-xl uppercase italic tracking-wider text-base shadow-2xl active:translate-y-1 flex items-center justify-center gap-2"
-        >
-          <span>💣 {isLocked ? "FIRING..." : "FIRE BOMB SALVO!"}</span>
-        </button>
+            {/* Needle overlaying the track container in layout (visually above the track) */}
+            <div className="absolute top-0 bottom-0 left-0 right-0 pointer-events-none z-20 flex items-end">
+              <img 
+                src={gaugeNeedleSrc}
+                alt="Needle"
+                className="absolute bottom-0 w-8 object-contain origin-bottom"
+                style={{ 
+                  left: `${needlePos}%`, 
+                  transform: 'translateX(-50%) scale(0.85)',
+                  filter: 'drop-shadow(0 -2px 10px rgba(255,0,0,0.8))'
+                }}
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          </div>
+
+          {/* Action Button: Cannon */}
+          <div className="relative z-10 w-full flex justify-center mb-2">
+            <button
+              onClick={() => {
+                soundFx.playClick();
+                handleLock(false);
+              }}
+              disabled={isLocked}
+              className="w-32 sm:w-40 md:w-48 max-w-[200px] focus:outline-none hover:scale-105 active:scale-95 transition-transform drop-shadow-2xl z-30"
+              style={{ opacity: isLocked ? 0.8 : 1 }}
+            >
+              <img 
+                src={miniCannonSrc} 
+                alt="Fire Cannon" 
+                className="w-full h-auto object-contain pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]" 
+              />
+            </button>
+          </div>
         </div>
 
       </div>
     </div>
   );
 }
+
