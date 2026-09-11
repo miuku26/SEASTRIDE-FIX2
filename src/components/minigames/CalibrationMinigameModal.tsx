@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { soundFx } from "../../utils/audio";
+import { MinigameTutorialOverlay } from "./MinigameTutorialOverlay";
 
 import gaugeTrackSrc from "../../assets/images/calibration_gauge_track.png";
 import gaugeNeedleSrc from "../../assets/images/calibration_needle_indicator.png";
@@ -15,6 +16,7 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(5.0);
   const [needlePos, setNeedlePos] = useState(0); // 0 to 100
   const [isLocked, setIsLocked] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
   const requestRef = useRef<number>(0);
   const direction = useRef<number>(1);
   const lastTimeRef = useRef<number>(0);
@@ -23,7 +25,7 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
   const speed = 0.14; // pos per ms
 
   useEffect(() => {
-    if (isLocked) return;
+    if (isLocked || showTutorial) return;
 
     const animate = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -46,7 +48,7 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
     
     requestRef.current = requestAnimationFrame(animate);
     return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
-  }, [isLocked]);
+  }, [isLocked, showTutorial]);
 
   const handleLock = (isTimeout: boolean = false) => {
     if (isLocked) return;
@@ -73,6 +75,13 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
         className="relative w-full max-w-sm h-full max-h-[75vh] sm:max-h-[70vh] sm:rounded-3xl flex flex-col items-center justify-between py-6 overflow-hidden bg-contain bg-center bg-no-repeat shadow-2xl"
         style={{ backgroundImage: `url(${bgImageSrc})` }}
       >
+        {showTutorial && (
+          <MinigameTutorialOverlay 
+            title="Calibration" 
+            instruction="Tap FIRE when the needle reaches the Target Zone." 
+            onDismiss={() => setShowTutorial(false)} 
+          />
+        )}
         
         {/* Ship Decoration - Upper Half */}
         <div className="w-full flex-1 flex flex-col items-center justify-start pt-8 sm:pt-12 pointer-events-none z-10">
@@ -121,7 +130,7 @@ export const CalibrationMinigameModal: React.FC<Props> = ({ onComplete }) => {
                 soundFx.playClick();
                 handleLock(false);
               }}
-              disabled={isLocked}
+              disabled={isLocked || showTutorial}
               className="w-32 sm:w-40 md:w-48 max-w-[200px] focus:outline-none hover:scale-105 active:scale-95 transition-transform drop-shadow-2xl z-30"
               style={{ opacity: isLocked ? 0.8 : 1 }}
             >

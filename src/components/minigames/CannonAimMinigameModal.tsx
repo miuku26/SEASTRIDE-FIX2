@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { soundFx } from "../../utils/audio";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { MinigameTutorialOverlay } from "./MinigameTutorialOverlay";
 
 import bgImageSrc from "../../assets/images/clean_cartoon_beach_bg_1786367953119.jpg";
 import playerShipSrc from "../../assets/images/ship_v2_lv1_green_17865478589866.png";
@@ -21,6 +22,7 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
   const [bombPos, setBombPos] = useState<{ x: number; y: number } | null>(null);
   const [showExplosion, setShowExplosion] = useState(false);
   const [explosionPos, setExplosionPos] = useState<{ x: number; y: number } | null>(null);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   const requestRef = useRef<number>(0);
   const direction = useRef<number>(1);
@@ -35,6 +37,8 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
 
   // Handle enemy patrol
   useEffect(() => {
+    if (showTutorial) return;
+
     // Start anywhere between 60 and 90
     const startDist = 60 + Math.random() * 30;
     setEnemyDistance(startDist);
@@ -69,7 +73,7 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
 
   // Handle power charging
   useEffect(() => {
-    if (!isCharging || isFired) return;
+    if (!isCharging || isFired || showTutorial) return;
 
     const animate = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -96,7 +100,7 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
 
   const handleChargeStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
-    if (isFired) return;
+    if (isFired || showTutorial) return;
     setIsCharging(true);
     setPower(0);
     direction.current = 1;
@@ -106,14 +110,14 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
 
   const handleChargeEnd = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
-    if (!isCharging || isFired) return;
+    if (!isCharging || isFired || showTutorial) return;
     setIsCharging(false);
     setIsFired(true);
     fireBomb();
   };
 
   const adjustAngle = (delta: number) => {
-    if (isFired) return;
+    if (isFired || showTutorial) return;
     setAngle(prev => Math.min(90, Math.max(0, prev + delta)));
   };
 
@@ -206,6 +210,14 @@ export const CannonAimMinigameModal: React.FC<Props> = ({ onComplete }) => {
           className="flex-1 bg-cover bg-no-repeat bg-center relative overflow-hidden"
           style={{ backgroundImage: `url(${bgImageSrc})` }}
         >
+          {showTutorial && (
+            <MinigameTutorialOverlay 
+              title="Cannon Aim" 
+              instruction="Adjust your angle, then hold and release to match the enemy's distance." 
+              onDismiss={() => setShowTutorial(false)} 
+            />
+          )}
+
           {/* Player Ship */}
           <div 
             className="absolute z-10 w-20 h-20 sm:w-24 sm:h-24 drop-shadow-xl"

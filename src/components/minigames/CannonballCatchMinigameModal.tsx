@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { soundFx } from "../../utils/audio";
+import { MinigameTutorialOverlay } from "./MinigameTutorialOverlay";
 
 import bombSrc from "../../assets/images/BOMB_v2.png";
 import catcherSrc from "../../assets/images/Catcher_v2.png";
@@ -28,6 +29,7 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
   const [score, setScore] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string, type: 'good' | 'bad' } | null>(null);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const objectsRef = useRef<FallingObject[]>([]);
@@ -40,7 +42,7 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
 
   // Game Loop
   useEffect(() => {
-    if (isGameOver) return;
+    if (isGameOver || showTutorial) return;
 
     const animate = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -101,19 +103,19 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
       objectsRef.current = nextObjects;
       setObjects([...nextObjects]);
 
+        animationRef.current = requestAnimationFrame(animate);
+      };
+
       animationRef.current = requestAnimationFrame(animate);
-    };
 
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [isGameOver]);
+      return () => {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      };
+    }, [isGameOver, showTutorial]);
 
   // Timer
   useEffect(() => {
-    if (isGameOver) return;
+    if (isGameOver || showTutorial) return;
     
     const timer = setInterval(() => {
       setTimeLeft(t => {
@@ -125,8 +127,8 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isGameOver]);
+      return () => clearInterval(timer);
+    }, [isGameOver, showTutorial]);
 
   const handleGameOver = () => {
     if (isGameOverRef.current) return;
@@ -151,7 +153,7 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
 
   // Interaction handlers
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (isGameOver) return;
+    if (isGameOver || showTutorial) return;
     if (!containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
@@ -173,6 +175,14 @@ export const CannonballCatchMinigameModal: React.FC<Props> = ({ onComplete }) =>
         onPointerDown={handlePointerMove}
       >
         
+        {showTutorial && (
+          <MinigameTutorialOverlay 
+            title="Cannonball Catch" 
+            instruction="Move left and right to catch cannonballs. Avoid the sea obstacles." 
+            onDismiss={() => setShowTutorial(false)} 
+          />
+        )}
+
         {/* HUD */}
         <div className="w-full px-6 flex items-center justify-between z-20 pointer-events-none">
           <div className="bg-[#1a0f0d]/80 px-4 py-2 rounded-xl border-2 border-[#4a2c17] shadow-lg">
